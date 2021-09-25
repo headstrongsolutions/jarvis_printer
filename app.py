@@ -30,7 +30,6 @@ class MarkdownFile:
         self.markdown = ""
         self.set_defaults()
         
-
     def from_friendly_name(self, friendly_name) -> None:
         """Rebuilds an instance when only the friendly name is known"""
         full_path = ("%s/%s.md" %(MARKDOWN_DIR, friendly_name))
@@ -53,7 +52,6 @@ class MarkdownFile:
             self.urlencoded_path = urllib.parse.quote(self.file_path)
             self.name = self.urlencoded_path.replace((MARKDOWN_DIR + "/"), "")
             self.name = self.name.replace(".md", "")
-
     
     def get_markdown_file_contents(self) -> None:
         """Gets markdown file contents"""
@@ -168,13 +166,19 @@ def upload_image(image) -> None:
     """Uploads a image file
     Args:
         image_file (),
-    Returns:\
+    Returns:
         None,
     """
     if hasattr(image, 'filename') and len(image.filename) > 0:
         image.save(path.join(MARKDOWN_DIR, image.filename))
 
-def get_friendly_markdown_name(markdown_file_path: str) -> List[str]:
+def get_friendly_markdown_name(markdown_file_path: str) -> str:
+    """Returns a markdowns friendly name
+    Args:
+        markdown_file_path (str),
+    Returns:
+        markdown_file name (str),
+    """
     markdown_file = MarkdownFile()
     markdown_file.file_path = markdown_file_path
     markdown_file.set_defaults()

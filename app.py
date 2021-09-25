@@ -50,10 +50,10 @@ class MarkdownFile:
     def set_defaults(self) -> None:
         """Sets default values"""
         if self.file_path and self.file_path > "":
-            name_search = re.search("[\s\-\_a-z|A-Z|0-9]+[^I]\.md$", self.file_path)
-            if name_search:
-                self.name = name_search.group(0).replace(".md", "")
-                self.urlencoded_path = urllib.parse.quote(self.file_path)
+            self.urlencoded_path = urllib.parse.quote(self.file_path)
+            self.name = self.urlencoded_path.replace((MARKDOWN_DIR + "/"), "")
+            self.name = self.name.replace(".md", "")
+
     
     def get_markdown_file_contents(self) -> None:
         """Gets markdown file contents"""
@@ -107,7 +107,6 @@ def get_markdown_file(urlencoded_path:str) -> str:
     """
     markdown = ""
     unencoded_path = urllib.parse.unquote(urlencoded_path)
-    print(unencoded_path)
     with open(unencoded_path) as file:
         raw_content = file.readlines()
         if len(raw_content) > 0:
@@ -122,10 +121,8 @@ def get_markdown_file_paths():
         markdown_files (List[str]),
     """
     markdown_file_paths = (glob.glob(("%s/*.md" % (MARKDOWN_DIR))))
-    print("raw_paths: %s" % markdown_file_paths)
     markdown_files = []
     for file_path in markdown_file_paths:
-        print("path: %s" %file_path)
         markdown_files.append(file_path)
     return markdown_files
 

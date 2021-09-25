@@ -13,6 +13,7 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
 
 ### To Do
 
+ - [ ] Flask Config for site props [markdown_dir,]
  - [ ] Some form of keep alive, probably within the flask application
  - [ ] WebAPI - Get all markdown files
  - [ ] WebAPI - Get a single markdown file

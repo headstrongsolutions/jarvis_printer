@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{page_values.name}}</title>
+    <title>Jarvis Printer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -12,36 +12,21 @@
   </head>
   <body>
     <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <h3>Markdown Files</h3>
-          <div class="list-group"></div>
-          {% for file in page_values.markdown_files %}
-            <button type="button" class="list-group-item list-group-item-action" data-path="{{page_values.markdown_dir}}/{{file}}">{{file}}</button>
-          {% endfor %}
+      <h1>Jarvis Printer</h1>
+      <p>Current ToDo statuses:</p>
+      {% for todo_item in todo_items %}
+        <div class="row">
+          <div class="col-sm">
+            {% if todo_item.checked %}
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            {% endif %}
+            <label class="form-check-label  font-weight-normal" for="flexCheckDefault">{{todo_item.text}}</label>
+          </div>
         </div>
-        </div>
-        <div class="col-sm">
-          One of three columns
-        </div>
-        <div class="col-sm">
-          One of three columns
-        </div>
-      </div>
-      <h1>{{page_values.name}}</h1>
-      <div>
-        
-        
-      </div>
-      <form role="form" method='POST' action='/'>
-        <div class="form-group">
-          <input type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." style="max-width: 300px;" autofocus required>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-      <br>
-      {% for error in errors %}
-        <h4>{{ error }}</h4>
+      {% else %}
+        <span>No ToDo's! :) Nice! </span>
       {% endfor %}
     </div>
     <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>

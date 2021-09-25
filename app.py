@@ -1,7 +1,7 @@
 """jarvis_printer"""
 import glob
 import re
-from os import stat_result
+from os import read, stat_result
 import urllib.parse
 from dataclasses import dataclass, asdict
 from typing import List
@@ -10,6 +10,11 @@ from flask import Flask, json, render_template, jsonify
 
 app = Flask(__name__)
 MARKDOWN_DIR="markdown"
+
+@dataclass
+class todo_item:
+    text: str
+    checked: bool
 
 class MarkdownFile:
     def __init__(self, path:str) -> None:
@@ -94,7 +99,35 @@ def index():
     page_values.name = "home"
     page_values.markdown_dir = MARKDOWN_DIR
     page_values.markdown_files = get_markdown_files(page_values)
-    return render_template('index.html', page_values=page_values)
+    todo_items = get_project_readme_todos()
+    return render_template('index.html', todo_items=todo_items)
+
+def get_project_readme_todos() -> List[todo_item]:
+    """Reads the projects README.md file, extracts the todo list and
+        returns it as a list of todo_item's
+    Args:
+        None,
+    Returns:
+        List[todo_item],
+    """
+    todo_items = []
+    with open('README.md') as readme_file:
+        readme_raw = readme_file.read()
+        todo_raw = readme_raw.split("### To Do\n")
+        todos = todo_raw[1].splitlines()
+        for todo in todos:
+            print(todo)
+            todo_item_new = todo_item("", False)
+            if ' - [X] ' in todo or ' - [x] ' in todo:
+                todo_item_new.checked = True
+                todo_item_new.text = todo.replace(' - [x] ', "")
+                todo_item_new.text = todo.replace(' - [X] ', "")
+            else:
+                todo_item_new.text = todo.replace(' - [ ] ', "")
+            todo_items.append(todo_item_new)
+    return todo_items
+        
+            
 
 
 if __name__ == '__main__':

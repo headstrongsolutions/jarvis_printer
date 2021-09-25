@@ -5,11 +5,11 @@ from os import read, stat_result
 import urllib.parse
 from dataclasses import dataclass, asdict
 from typing import List
-from flask import Flask, json, render_template, jsonify
+from flask import Flask, json, render_template, jsonify, request
 #from catprinter.catprinter import CatPrinter
 
 app = Flask(__name__)
-MARKDOWN_DIR="markdown"
+MARKDOWN_DIR="catprinter/markdown"
 
 @dataclass
 class todo_item:
@@ -26,81 +26,27 @@ class MarkdownFile:
         """
         name_search = re.search("[\s\-\_a-z|A-Z|0-9]+[^I]\.md$", path)
         self.path = path
-        self.name = name_search.group(0).replace(".md", "")
-        self.urlencoded_path = urllib.parse.quote(self.path)
+        self.name = ""
+        self.urlencoded_path = ""
         self.markdown = ""
+        if len(self.path) > 0:
+            self.name = name_search.group(0).replace(".md", "")
+            self.urlencoded_path = urllib.parse.quote(self.path)
+
+    def from_friendly_name(self, friendly_name) -> None:
+        """Rebuilds an instance when only the friendly name is known"""
+        full_path = ("%s/%s.md" %(MARKDOWN_DIR, friendly_name))
+        temp_markdown_file = MarkdownFile(path=full_path)
+        self.name = temp_markdown_file.name
+        self.path = temp_markdown_file.path
+        self.urlencoded_path = temp_markdown_file.urlencoded_path
+        self.markdown = temp_markdown_file.markdown
 
 @dataclass
 class PageValues:
     name: str
     markdown_dir: str
     markdown_files: List[MarkdownFile]
-
-
-def get_markdown_file(urlencoded_path:str) -> str:
-    """Returns text within a text file
-    Args:
-        urlencoded_path (str),
-    Returns:
-        markdown (str),
-    """
-    markdown = ""
-    unencoded_path = urllib.parse.unquote(urlencoded_path)
-    with open(unencoded_path) as file:
-        raw_content = file.readlines()
-        if len(raw_content) > 0:
-            markdown = raw_content
-    return markdown
-
-def get_markdown_files(page_values: PageValues):
-    # All files ending with .txt
-    markdown_file_paths = (glob.glob(("%s/*.md" % (MARKDOWN_DIR))))
-    page_values.markdown_files = None
-    for path in markdown_file_paths:
-        page_values.markdown_files.append(MarkdownFile(path=path))
-    return page_values
-    
-@app.route('/api/v1/resources/get_markdowns', methods=['GET'])
-def api_get_markdowns():
-    books = [
-        {'id': 0,
-        'title': 'A Fire Upon the Deep',
-        'author': 'Vernor Vinge',
-        'first_sentence': 'The coldsleep itself was dreamless.',
-        'year_published': '1992'},
-        {'id': 1,
-        'title': 'The Ones Who Walk Away From Omelas',
-        'author': 'Ursula K. Le Guin',
-        'first_sentence': 'With a clamor of bells that set the swallows soaring, the Festival of Summer came to the city Omelas, bright-towered by the sea.',
-        'published': '1973'},
-        {'id': 2,
-        'title': 'Dhalgren',
-        'author': 'Samuel R. Delany',
-        'first_sentence': 'to wound the autumnal city.',
-        'published': '1975'}
-    ]
-    page_values = PageValues
-    page_values.name = "home"
-    page_values.markdown_dir = MARKDOWN_DIR
-    page_values.markdown_files = get_markdown_files(page_values)
-    return jsonify(page_values)
-@app.route('/api/v1/resources/get_markdown/{id}', methods=['GET'])
-def api_get_markdown():
-    page_values = PageValues
-    page_values.name = "home"
-    page_values.markdown_dir = MARKDOWN_DIR
-    page_values.markdown_files = get_markdown_files(page_values)
-    return jsonify(page_values)
-    
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    page_values = PageValues
-    page_values.name = "home"
-    page_values.markdown_dir = MARKDOWN_DIR
-    page_values.markdown_files = get_markdown_files(page_values)
-    todo_items = get_project_readme_todos()
-    return render_template('index.html', todo_items=todo_items)
 
 def get_project_readme_todos() -> List[todo_item]:
     """Reads the projects README.md file, extracts the todo list and
@@ -116,7 +62,6 @@ def get_project_readme_todos() -> List[todo_item]:
         todo_raw = readme_raw.split("### To Do\n")
         todos = todo_raw[1].splitlines()
         for todo in todos:
-            print(todo)
             todo_item_new = todo_item("", False)
             if ' - [X] ' in todo or ' - [x] ' in todo:
                 todo_item_new.checked = True
@@ -126,9 +71,67 @@ def get_project_readme_todos() -> List[todo_item]:
                 todo_item_new.text = todo.replace(' - [ ] ', "")
             todo_items.append(todo_item_new)
     return todo_items
-        
-            
 
+def get_markdown_file(urlencoded_path:str) -> str:
+    """Returns text within a text file
+    Args:
+        urlencoded_path (str),
+    Returns:
+        markdown (str),
+    """
+    markdown = ""
+    unencoded_path = urllib.parse.unquote(urlencoded_path)
+    print(unencoded_path)
+    with open(unencoded_path) as file:
+        raw_content = file.readlines()
+        if len(raw_content) > 0:
+            markdown = raw_content
+    return markdown
+
+def get_markdown_files():
+    """Returns all markdown files in a specified directory
+    Args:
+        None,
+    Returns:
+        markdown_files (List[str]),
+    """
+    markdown_file_paths = (glob.glob(("%s/*.md" % (MARKDOWN_DIR))))
+    print("raw_paths: %s" % markdown_file_paths)
+    markdown_files = []
+    for path in markdown_file_paths:
+        print("path: %s" %path)
+        markdown_files.append(path)
+    return markdown_files
+
+def get_friendly_markdown_name(markdown_file_path: str) -> List[str]:
+    markdown_file = MarkdownFile(markdown_file_path)
+    return markdown_file.name
+    
+@app.route('/api/v1/resources/get_markdown_names', methods=['GET'])
+def get_markdown_names():
+    markdown_names = []
+    markdown_files = get_markdown_files()
+    for path in markdown_files:
+        markdown_names.append(get_friendly_markdown_name(path))
+    return jsonify(markdown_names=markdown_names)
+
+@app.route('/api/v1/resources/get_markdown', methods=['GET'])
+def api_get_markdown():
+    print('so far..')
+    markdown_name = request.args.get('markdown_name', default=1, type=str)
+    print(markdown_name)
+    markdown = MarkdownFile("")
+    markdown.from_friendly_name(markdown_name)
+    return jsonify(name=markdown.name, 
+                   path=markdown.path, 
+                   urlencoded_path=markdown.urlencoded_path, 
+                   markdown=markdown.markdown)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    markdown_files = get_markdown_files()
+    todo_items = get_project_readme_todos()
+    return render_template('index.html', todo_items=todo_items)
 
 if __name__ == '__main__':
     app.run()

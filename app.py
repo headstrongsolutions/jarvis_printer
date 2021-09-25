@@ -1,11 +1,10 @@
 """jarvis_printer"""
 import glob
-import re
-from os import read, spawnve, stat_result, path, remove
+from os import path, remove
 import urllib.parse
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import List
-from flask import Flask, json, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request
 #from catprinter.catprinter import CatPrinter
 
 app = Flask(__name__)

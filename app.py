@@ -5,7 +5,7 @@ from os import stat_result
 import urllib.parse
 from dataclasses import dataclass, asdict
 from typing import List
-from flask import Flask, render_template, jsonify
+from flask import Flask, json, render_template, jsonify
 #from catprinter.catprinter import CatPrinter
 
 app = Flask(__name__)
@@ -77,10 +77,15 @@ def api_get_markdowns():
     page_values = PageValues
     page_values.name = "home"
     page_values.markdown_dir = MARKDOWN_DIR
-    page_values.markdown_files = get_markdown_files()
+    page_values.markdown_files = get_markdown_files(page_values)
     return jsonify(page_values)
 @app.route('/api/v1/resources/get_markdown/{id}', methods=['GET'])
 def api_get_markdown():
+    page_values = PageValues
+    page_values.name = "home"
+    page_values.markdown_dir = MARKDOWN_DIR
+    page_values.markdown_files = get_markdown_files(page_values)
+    return jsonify(page_values)
     
 
 @app.route('/', methods=['GET', 'POST'])
@@ -88,7 +93,7 @@ def index():
     page_values = PageValues
     page_values.name = "home"
     page_values.markdown_dir = MARKDOWN_DIR
-    page_values.markdown_files = get_markdown_files()
+    page_values.markdown_files = get_markdown_files(page_values)
     return render_template('index.html', page_values=page_values)
 
 

@@ -17,6 +17,7 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
  - [ ] 2 - HTML form functionality for creating new markdown files
  - [ ] 2 - HTML form functionality for deleting markdown files
  - [ ] 3 - HTML form functionality for listing image files
+ - [ ] 3 - Flask API functionality for listing image files
  - [ ] 3 - HTML form functionality for deleting image files
  - [ ] 4 - Some form of keep alive, probably within the flask application
  - [ ] 9 - Fix intermittent drag'n'drop error on markdown-editor

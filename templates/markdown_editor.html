@@ -29,9 +29,10 @@
       </div>
       <div class="col-md-4">
         <h3>Files</h3>
-        {% for markdown_file in imagepath_and_markdowns[1:] %}
-          <span>{{markdown_file}}</span> 
-        {% endfor %}
+          <div class="markdown_files"></div>
+          <div class="markdown_actions"></div>
+          <div class="image_files"></div>
+          <div class="image_actions"></div>
       </div>
     </div>
     <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>

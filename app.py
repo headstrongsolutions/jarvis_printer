@@ -8,7 +8,7 @@ from flask import Flask, render_template, jsonify, request
 from CatPrinter import catprinter
 
 app = Flask(__name__)
-MARKDOWN_DIR="/static/markdown"
+MARKDOWN_DIR="static/markdown"
 IMAGES_DIR="images"
 LOCAL_DIR=os.path.dirname(os.path.realpath(__file__))
 
@@ -119,7 +119,10 @@ def get_markdown_file_paths():
     Returns:
         markdown_files (List[str]),
     """
-    markdown_file_paths = (glob.glob(("%s/*.md" % (MARKDOWN_DIR))))
+    markdown_file_mask = ("%s/*.md" % (MARKDOWN_DIR))
+    print(markdown_file_mask)
+    markdown_file_paths = (glob.glob(markdown_file_mask))
+    print(markdown_file_paths)
     markdown_files = []
     for file_path in markdown_file_paths:
         markdown_files.append(file_path)
@@ -267,7 +270,18 @@ def print_markdown():
 def markdown_editor():
     
     images_path = ("%s/%s/" % (MARKDOWN_DIR, IMAGES_DIR))
-    return render_template('markdown_editor.html', images_path=images_path)
+    markdown_files = get_markdown_file_paths()
+    print("markdown_files: %s" % markdown_files)
+    imagepath_and_markdowns = []
+    imagepath_and_markdowns.append(images_path)
+    for file_path in markdown_files:
+        friendly_markdown_name = get_friendly_markdown_name(file_path)
+        imagepath_and_markdowns.append(friendly_markdown_name)
+        print("friendly_markdown_name: %s" % friendly_markdown_name)
+    for thing in imagepath_and_markdowns:
+        print("thing: %s" % thing)
+
+    return render_template('markdown_editor.html', imagepath_and_markdowns=imagepath_and_markdowns)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/toopay/bootstrap-markdown/master/css/bootstrap-markdown.min.css" />
     <link rel="stylesheet" href="static/style.css" />
     <script language="javascript">
-      global_image_path = "{{images_path}}";
+      global_image_path = "/{{imagepath_and_markdowns[0]}}";
     </script>
     <style>
       .container {
@@ -18,7 +18,7 @@
   </head>
   <body>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-8">
         <h1>Bootstrap Markdown DEMO</h1>
         <textarea id="comment-md" name="comment" placeholder="Say something..."></textarea>
         <br />
@@ -26,6 +26,12 @@
         <!-- <div id="comment-md-preview-container">
           <div class="well well-sm well-light md-preview margin-top-10" id="comment-md-preview"></div>
         </div> -->
+      </div>
+      <div class="col-md-4">
+        <h3>Files</h3>
+        {% for markdown_file in imagepath_and_markdowns[1:] %}
+          <span>{{markdown_file}}</span> 
+        {% endfor %}
       </div>
     </div>
     <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>

@@ -6,7 +6,7 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link data-require="fontawesome@4.1.0" data-semver="4.1.0" rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://cdn.rawgit.com/toopay/bootstrap-markdown/master/css/bootstrap-markdown.min.css" />
-    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="static/css/style.css" />
     <script language="javascript">
       global_image_path = "/{{imagepath_and_markdowns[0]}}";
     </script>
@@ -30,18 +30,18 @@
       <div class="col-md-4">
         <h3>Files</h3>
         {% for markdown_file in imagepath_and_markdowns[1:] %}
-          <span>{{markdown_file}}</span> 
+          <span>{{markdown_file}}</span>
         {% endfor %}
       </div>
     </div>
     <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    
+
     <script data-require="marked@*" data-semver="0.3.1" src="http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.1/marked.js"></script>
-    <script src="static/bootstrap-markdown.js"></script>
-    <script src="static/filedrop.js"></script>
+    <script src="static/js/bootstrap-markdown.js"></script>
+    <script src="static/js/filedrop.js"></script>
     <script src="https://rawgit.com/jeresig/jquery.hotkeys/master/jquery.hotkeys.js"></script>
-    <script src="static/script.js"></script>
-    
+    <script src="static/js/script.js"></script>
+
   </body>
 </html>

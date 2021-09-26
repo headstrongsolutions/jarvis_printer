@@ -2,7 +2,6 @@
 
 $(function() {
   var $previewContainer = $('#comment-md-preview-container');
-
   $previewContainer.hide();
 
   var $md = $("#comment-md").markdown({
@@ -57,8 +56,7 @@ $(function() {
     url: upload_url,
     fallbackClick: false,
     beforeSend: function(file, i, done) {
-      msgs.
-      default.hide();
+      msgs.default.hide();
       msgs.err.hide();
       msgs.loading.show();
       done();
@@ -90,13 +88,12 @@ $(function() {
       msgs.loading.html('<i class="fa fa-refresh fa-spin"></i> Uploading <span class="text-info">' + file.name + '</span>... ' + progress + '%');
     },
     afterAll: function() {
-      msgs.
-      default.show();
+      msgs.default.show();
       msgs.loading.hide();
       msgs.err.hide();
     },
     uploadFinished: function(i, file, response, time) {
-      $md.val($md.val() + "![" + file.name + "](" + file.name + ")\n").trigger('change');
+      $md.val($md.val() + "![" + file.name + "](" + global_image_path + file.name + ")\n").trigger('change');
       // response is the data you got back from server in JSON format.
     }
   });

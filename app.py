@@ -8,7 +8,7 @@ from flask import Flask, render_template, jsonify, request
 from CatPrinter import catprinter
 
 app = Flask(__name__)
-MARKDOWN_DIR="CatPrinter/markdown"
+MARKDOWN_DIR="/static/markdown"
 IMAGES_DIR="images"
 LOCAL_DIR=os.path.dirname(os.path.realpath(__file__))
 
@@ -266,8 +266,8 @@ def print_markdown():
 @app.route('/markdown_editor', methods=['GET', 'POST'])
 def markdown_editor():
     
-    
-    return render_template('markdown_editor.html')
+    images_path = ("%s/%s/" % (MARKDOWN_DIR, IMAGES_DIR))
+    return render_template('markdown_editor.html', images_path=images_path)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

@@ -4,6 +4,28 @@ $(function() {
   var $previewContainer = $('#comment-md-preview-container');
   $previewContainer.hide();
 
+  var global_api_url = global_host_url + "/api/v1/resources/"
+
+  function get_markdown_data(markdown_friendly_name){
+    var markdown_data_url = global_api_url +
+                            "get_markdown?markdown_name=" +
+                            markdown_friendly_name;
+      $('#comment-md').load(markdown_data_url);
+      console.log(markdown_data_url);
+  }
+  get_markdown_data('hello');
+
+  function get_markdown_names(){
+    $.get(global_api_url + "get_markdown_names", function(data){
+      console.log(data.markdown_names[0]);
+      for (var i=0; i < data.markdown_names.length; i++){
+        $('.markdown_files').append("<div>" + data.markdown_names[i] + "</div>");
+      }
+    });
+  }
+  get_markdown_names();
+
+
   var $md = $("#comment-md").markdown({
     autofocus: false,
     height: 270,

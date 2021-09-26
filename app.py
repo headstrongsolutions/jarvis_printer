@@ -30,7 +30,7 @@ class MarkdownFile:
         self.urlencoded_path = ""
         self.markdown = ""
         self.set_defaults()
-        
+
     def from_friendly_name(self, friendly_name) -> None:
         """Rebuilds an instance when only the friendly name is known"""
         full_path = ("%s/%s.md" %(MARKDOWN_DIR, friendly_name))
@@ -46,14 +46,14 @@ class MarkdownFile:
         """Converts a urlencoded path to unencoded"""
         self.file_path = urllib.parse.unquote(urlencoded_path)
         self.set_defaults()
-    
+
     def set_defaults(self) -> None:
         """Sets default values"""
         if self.file_path and self.file_path > "":
             self.urlencoded_path = urllib.parse.quote(self.file_path)
             self.name = self.urlencoded_path.replace((MARKDOWN_DIR + "/"), "")
             self.name = self.name.replace(".md", "")
-    
+
     def get_markdown_file_contents(self) -> None:
         """Gets markdown file contents"""
         file_path = ""
@@ -195,7 +195,7 @@ def upload_file(file) -> None:
     file.save(full_path)
 
     # TODO - check file is saved
-    # TODO - return bool on saved success 
+    # TODO - return bool on saved success
 
 @app.route('/api/v1/resources/upload_image', methods=['POST'])
 def upload_image():
@@ -246,10 +246,8 @@ def api_get_markdown():
     markdown = MarkdownFile()
     markdown.from_friendly_name(friendly_name=markdown_name)
     markdown.get_markdown_file_contents()
-    return jsonify(name=markdown.name, 
-                   path=markdown.file_path, 
-                   urlencoded_path=markdown.urlencoded_path, 
-                   markdown=markdown.markdown)
+
+    return markdown.markdown
 
 @app.route('/api/v1/resources/print_markdown', methods=['GET'])
 def print_markdown():
@@ -261,14 +259,14 @@ def print_markdown():
     cat_printer.add_feed(3)
     cat_printer.print()
 
-    return jsonify(name=markdown.name, 
-                   path=markdown.file_path, 
-                   urlencoded_path=markdown.urlencoded_path, 
+    return jsonify(name=markdown.name,
+                   path=markdown.file_path,
+                   urlencoded_path=markdown.urlencoded_path,
                    markdown=markdown.markdown)
 
 @app.route('/markdown_editor', methods=['GET', 'POST'])
 def markdown_editor():
-    
+
     images_path = ("%s/%s/" % (MARKDOWN_DIR, IMAGES_DIR))
     markdown_files = get_markdown_file_paths()
     print("markdown_files: %s" % markdown_files)
@@ -280,8 +278,9 @@ def markdown_editor():
         print("friendly_markdown_name: %s" % friendly_markdown_name)
     for thing in imagepath_and_markdowns:
         print("thing: %s" % thing)
-
-    return render_template('markdown_editor.html', imagepath_and_markdowns=imagepath_and_markdowns)
+    global_api_host = request.host_url
+    host_url_and_images_path = [global_api_host, images_path]
+    return render_template('markdown_editor.html', host_url_and_images_path=host_url_and_images_path)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

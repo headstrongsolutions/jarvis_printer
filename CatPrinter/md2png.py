@@ -1,6 +1,5 @@
 """catprinter"""
 import re
-import sys
 from functools import reduce
 import markdown
 from PIL import Image as Image

@@ -1,14 +1,16 @@
 """jarvis_printer"""
 import glob
-from os import path, remove
+import os, sys
 import urllib.parse
 from dataclasses import dataclass
 from typing import List
 from flask import Flask, render_template, jsonify, request
-#from catprinter.catprinter import CatPrinter
+from CatPrinter import catprinter
 
 app = Flask(__name__)
-MARKDOWN_DIR="catprinter/markdown"
+MARKDOWN_DIR="CatPrinter/markdown"
+IMAGES_DIR="images"
+LOCAL_DIR=os.path.dirname(os.path.realpath(__file__))
 
 @dataclass
 class todo_item:
@@ -150,7 +152,7 @@ def delete_markdown_file(markdown_file:MarkdownFile) -> None:
     Returns:
         None,
     """
-    remove(markdown_file.file_path)
+    os.remove(markdown_file.file_path)
 
 def delete_image_file(image_file_path:str) -> None:
     """Deletes a image file
@@ -159,17 +161,7 @@ def delete_image_file(image_file_path:str) -> None:
     Returns:
         None,
     """
-    remove(image_file_path)
-
-def upload_image(image) -> None:
-    """Uploads a image file
-    Args:
-        image_file (),
-    Returns:
-        None,
-    """
-    if hasattr(image, 'filename') and len(image.filename) > 0:
-        image.save(path.join(MARKDOWN_DIR, image.filename))
+    os.remove(image_file_path)
 
 def get_friendly_markdown_name(markdown_file_path: str) -> str:
     """Returns a markdowns friendly name
@@ -183,17 +175,43 @@ def get_friendly_markdown_name(markdown_file_path: str) -> str:
     markdown_file.set_defaults()
     return markdown_file.name
 
+def upload_file(file) -> None:
+    """Uploads a file
+    Args:
+        file_data (str),
+        file_name (str),
+    Returns:
+        None,
+    """
+    # print("file: %s" % file_name)
+    #print("filename: %s" % file.filename)
+    print(file.filename)
+
+    full_path = ("%s/%s/%s/%s" % (LOCAL_DIR, MARKDOWN_DIR, IMAGES_DIR, file.filename))
+    print(full_path)
+    file.save(full_path)
+
+    # TODO - check file is saved
+    # TODO - return bool on saved success 
+
 @app.route('/api/v1/resources/upload_image', methods=['POST'])
 def upload_image():
-    if request.files['image'].filename != '':
-        image = request.files['image']
-        upload_image(image)
+    success = False
+    if request.method == 'POST':
+        file = request.files['userfile']
+        upload_file(file)
+    else:
+        print('why was this a GET?!?!')
+
+    return jsonify(success=True)
 
 
 @app.route('/api/v1/resources/delete_image', methods=['POST'])
 def delete_image():
     image_file_path = request.form.get("image_file_path")
     delete_image_file(image_file_path)
+
+    return jsonify(True)
 
 
 @app.route('/api/v1/resources/save_markdown', methods=['POST'])
@@ -229,6 +247,27 @@ def api_get_markdown():
                    path=markdown.file_path, 
                    urlencoded_path=markdown.urlencoded_path, 
                    markdown=markdown.markdown)
+
+@app.route('/api/v1/resources/print_markdown', methods=['GET'])
+def print_markdown():
+    markdown_name = request.args.get('markdown_name', default=1, type=str)
+    markdown = MarkdownFile()
+    markdown.from_friendly_name(friendly_name=markdown_name)
+    cat_printer = catprinter.CatPrinter()
+    cat_printer.add_markdown(LOCAL_DIR + "/" + markdown.file_path)
+    cat_printer.add_feed(3)
+    cat_printer.print()
+
+    return jsonify(name=markdown.name, 
+                   path=markdown.file_path, 
+                   urlencoded_path=markdown.urlencoded_path, 
+                   markdown=markdown.markdown)
+
+@app.route('/markdown_editor', methods=['GET', 'POST'])
+def markdown_editor():
+    
+    
+    return render_template('markdown_editor.html')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

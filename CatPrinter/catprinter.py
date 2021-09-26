@@ -1,8 +1,5 @@
 """catprinter"""
 import asyncio
-import argparse
-import enum
-from os import stat_result
 from os import path
 
 from bleak import BleakClient, BleakScanner
@@ -12,8 +9,8 @@ import PIL.Image
 import PIL.ImageDraw
 import PIL.ImageFont
 
-#from .md2png import *
-import md2png
+from CatPrinter.md2png import *
+# import md2png
 
 class CatPrinter:
     def __init__(self, 
@@ -90,6 +87,15 @@ class CatPrinter:
         # if self.printer_setup:
         #     self.keep_alive_timer
 
+    def get_or_create_eventloop(self):
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError as ex:
+            if "There is no current event loop in thread" in str(ex):
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                return asyncio.get_event_loop()
+
     def print(self):
         """In a async loop, send the self.print_data to the printer
         Args:
@@ -97,7 +103,7 @@ class CatPrinter:
         Returns:
             success (bool),
         """
-        loop = asyncio.get_event_loop()
+        loop = self.get_or_create_eventloop()
         loop.run_until_complete(self.connect_and_send(self.initial_data + self.print_data))
 
     def add_markdown(self,
@@ -111,7 +117,7 @@ class CatPrinter:
         width = int(self.PRINTER_WIDTH)
         print("Reading %s" % markdownfile_path)
         f = open(markdownfile_path)
-        image = md2png.md2png(f.read(), [(0, 0, width)], {
+        image = md2png(f.read(), [(0, 0, width)], {
             "font_size": 20,
             "code_font_size": 20,
         })
@@ -491,7 +497,7 @@ def main():
     # cat_printer.add_text_file("text/stardew.txt")
     # cat_printer.add_image("images/dogs.jpeg")
     # cat_printer.add_text_string("My dog is called 'Dan'.")
-    cat_printer.add_markdown("markdown/phew.md")
+    cat_printer.add_markdown("markdown/stardew_valley.md")
     cat_printer.add_feed(3)
     cat_printer.print()
 

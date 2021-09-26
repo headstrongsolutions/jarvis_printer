@@ -12,9 +12,16 @@ During development Flask can automatically reload the application when changed, 
 The core CatPrinter is working as expected, and passing a Markdown file to it works also as expected (including rendering and printing images).
 
 ### To Do
- - [ ] HTML forms for markdown editing/preview 
- - [ ] Flask Config for site props [markdown_dir,]
+ - [ ] Fix intermittent drag'n'drop error on markdown-editor
+ - [ ] Correct pathing for images in markdown docs
+ - [ ] Load markdown data into markdown-editor
+ - [ ] HTML form functionality for loading markdown files
+ - [ ] HTML form functionality for creating new markdown files
+ - [ ] HTML form functionality for deleting markdown files
+ - [ ] HTML form functionality for listing image files
+ - [ ] HTML form functionality for deleting image files
  - [ ] Some form of keep alive, probably within the flask application
+ - [X] HTML forms for markdown editing/preview 
  - [X] WebAPI - Get all markdown files
  - [X] WebAPI - Get a single markdown file
  - [X] WebAPI - Update a single markdown file

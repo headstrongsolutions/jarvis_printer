@@ -145,16 +145,11 @@ def get_image_file_paths():
         image_files (List[str]),
     """
     jpg_filemask = ("%s/%s/*.jpg" % (MARKDOWN_DIR, IMAGES_DIR))
-    jpeg_filemask = ("%s/%s/*.jpg" % (MARKDOWN_DIR, IMAGES_DIR))
     png_filemask = ("%s/%s/*.png" % (MARKDOWN_DIR, IMAGES_DIR))
-    print("%s/%s/*jpg" % (MARKDOWN_DIR, IMAGES_DIR))
     jpg_file_paths = (glob.glob(jpg_filemask))
-    jpeg_file_paths = (glob.glob(jpeg_filemask))
     png_file_paths = (glob.glob(png_filemask))
     image_files = []
     for file_path in jpg_file_paths:
-        image_files.append(file_path)
-    for file_path in jpeg_file_paths:
         image_files.append(file_path)
     for file_path in png_file_paths:
         image_files.append(file_path)
@@ -189,11 +184,6 @@ def delete_markdown_file(markdown_name:str) -> SuccessErrors:
     """
     success = SuccessErrors.Undefined
     markdown_file = MarkdownFile()
-    print(markdown_name)
-    print(markdown_file.name)
-    print(markdown_file.file_path)
-    print(markdown_file.urlencoded_path)
-    print(markdown_file.markdown)
     markdown_file.from_friendly_name(markdown_name)
     if file_exists(markdown_file.file_path):
         os.remove(markdown_file.file_path)
@@ -214,7 +204,9 @@ def delete_image_file(image_file_path:str) -> None:
     Returns:
         None,
     """
-    os.remove(image_file_path)
+    markdown_images_path = str("%s/%s" % (MARKDOWN_DIR, IMAGES_DIR))
+    if markdown_images_path in image_file_path:
+        os.remove(image_file_path)
 
 def get_friendly_markdown_name(markdown_file_path: str) -> str:
     """Returns a markdowns friendly name
@@ -302,9 +294,9 @@ def upload_image():
 
     return jsonify(success=True)
 
-@app.route('/api/v1/resources/delete_image', methods=['POST'])
+@app.route('/api/v1/resources/delete_image', methods=['GET'])
 def delete_image():
-    image_file_path = request.form.get("image_file_path")
+    image_file_path = request.args.get("image_file_path")
     delete_image_file(image_file_path)
 
     return jsonify(True)

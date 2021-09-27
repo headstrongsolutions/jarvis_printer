@@ -1,6 +1,7 @@
 // Code goes here
 var global_api_url = global_host_url + "/api/v1/resources/";
 var global_markdown_file_name = "";
+var global_image_file_name = "";
 
 function get_markdown_data(markdown_friendly_name){
   var markdown_data_url = global_api_url +
@@ -26,13 +27,15 @@ function get_markdown_names(){
 function get_images(){
   $.get(global_api_url + "get_image_filenames", function(data){
     $('.image_files').html("");
-    console.log(data);
     for (var i=0; i < data.image_files.length; i++){
+      short_path = data.image_files[i].trim().replaceAll(global_images_path, "");
       html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
-      html += "          <span class=\"file_rollover\" onclick=\"get_markdown_data('"+data.image_files[i].trim()+"')\">" + data.image_files[i].trim();
+      html += "          <span class=\"file_rollover\">" + short_path;
       html += "        </span>";
-      html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.image_files[i].trim()+"')\">Show</button> ";
-      html += "            <button class=\"btn btn-danger btn-xs pull-right\" data-delete-name=\""+data.image_files[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.image_files[i].trim()+"')\">Delete</button>";
+      html += "            <a href=\""+data.image_files[i].trim()+"\" target=\"_blank\" class=\"btn btn-success btn-xs pull-right\">Show</a> ";
+      html += "            <button class=\"btn btn-danger btn-xs pull-right\" ";
+      html += "                   data-delete-name=\""+data.image_files[i].trim()+"\" ";
+      html += "                   onclick=\"delete_image_file_modal('"+data.image_files[i].trim()+"')\">Delete</button>";
       html += "      </div></div>";
       $('.image_files').append(html);
     }
@@ -43,6 +46,11 @@ function get_images(){
 function delete_markdown_file_modal(markdown_name){
   global_markdown_file_name = markdown_name;
   $('#deleteMarkdownModal').modal('toggle');
+}
+
+function delete_image_file_modal(image_filename){
+  global_image_file_name = image_filename;
+  $('#deleteImageModal').modal('toggle');
 }
 
 function delete_markdown_file() {
@@ -62,6 +70,26 @@ function delete_markdown_file() {
         }
     });
     global_markdown_file_name = "";
+  }
+}
+
+function delete_image_file() {
+  $('#deleteImageModal').modal('toggle');
+  if (global_image_file_name > ""){
+    encoded_image_filename = encodeURIComponent(global_image_file_name);
+    $.get(global_api_url +
+      "delete_image" +
+      "?image_file_path=" +
+      encoded_image_filename, function(data){
+        console.log(data);
+        if (data){
+          get_images();
+        }
+        else{
+          alert("Something went wrong deleting the image file");
+        }
+    });
+    global_image_file_name = "";
   }
 }
 

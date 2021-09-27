@@ -137,6 +137,29 @@ def get_markdown_file_paths():
         markdown_files.append(file_path)
     return markdown_files
 
+def get_image_file_paths():
+    """Returns all image file paths in a specified directory
+    Args:
+        None,
+    Returns:
+        image_files (List[str]),
+    """
+    jpg_filemask = ("%s/%s/*.jpg" % (MARKDOWN_DIR, IMAGES_DIR))
+    jpeg_filemask = ("%s/%s/*.jpg" % (MARKDOWN_DIR, IMAGES_DIR))
+    png_filemask = ("%s/%s/*.png" % (MARKDOWN_DIR, IMAGES_DIR))
+    print("%s/%s/*jpg" % (MARKDOWN_DIR, IMAGES_DIR))
+    jpg_file_paths = (glob.glob(jpg_filemask))
+    jpeg_file_paths = (glob.glob(jpeg_filemask))
+    png_file_paths = (glob.glob(png_filemask))
+    image_files = []
+    for file_path in jpg_file_paths:
+        image_files.append(file_path)
+    for file_path in jpeg_file_paths:
+        image_files.append(file_path)
+    for file_path in png_file_paths:
+        image_files.append(file_path)
+    return image_files
+
 def save_markdown_file(markdown:MarkdownFile) -> bool:
     """Saves a markdown file to location, creates a new file
         if one doesnt already exist
@@ -317,6 +340,11 @@ def save_markdown():
 
     save_result = save_markdown_file(markdown_file)
     return jsonify(save_result=save_result)
+
+@app.route('/api/v1/resources/get_image_filenames', methods=['GET'])
+def get_image_filenames():
+    image_files = get_image_file_paths()
+    return jsonify(image_files=image_files)
 
 @app.route('/api/v1/resources/get_markdown_names', methods=['GET'])
 def get_markdown_names():

@@ -23,6 +23,23 @@ function get_markdown_names(){
   });
 }
 
+function get_images(){
+  $.get(global_api_url + "get_image_filenames", function(data){
+    $('.image_files').html("");
+    console.log(data);
+    for (var i=0; i < data.image_files.length; i++){
+      html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
+      html += "          <span class=\"file_rollover\" onclick=\"get_markdown_data('"+data.image_files[i].trim()+"')\">" + data.image_files[i].trim();
+      html += "        </span>";
+      html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.image_files[i].trim()+"')\">Show</button> ";
+      html += "            <button class=\"btn btn-danger btn-xs pull-right\" data-delete-name=\""+data.image_files[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.image_files[i].trim()+"')\">Delete</button>";
+      html += "      </div></div>";
+      $('.image_files').append(html);
+    }
+  });
+}
+
+
 function delete_markdown_file_modal(markdown_name){
   global_markdown_file_name = markdown_name;
   $('#deleteMarkdownModal').modal('toggle');
@@ -84,8 +101,8 @@ $(function() {
   });
 
   get_markdown_data('hello');
-
   get_markdown_names();
+  get_images();
 
   var $md = $("#comment-md").markdown({
     autofocus: false,

@@ -14,7 +14,7 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
 ### To Do
  - [X] 1 - Load markdown data into markdown-editor
  - [X] 2 - HTML form functionality for loading markdown files
- - [ ] 2 - HTML form functionality for creating new markdown files
+ - [X] 2 - HTML form functionality for creating new markdown files
  - [ ] 2 - HTML form functionality for deleting markdown files
  - [ ] 3 - HTML form functionality for listing image files
  - [ ] 3 - Flask API functionality for listing image files
@@ -22,7 +22,7 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
  - [ ] 4 - Some form of keep alive, probably within the flask application
  - [ ] 9 - Fix intermittent drag'n'drop error on markdown-editor
  - [X] 1 - Correct pathing for images in markdown docs
- - [X] HTML forms for markdown editing/preview 
+ - [X] HTML forms for markdown editing/preview
  - [X] WebAPI - Get all markdown files
  - [X] WebAPI - Get a single markdown file
  - [X] WebAPI - Update a single markdown file

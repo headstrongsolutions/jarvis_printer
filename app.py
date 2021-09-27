@@ -2,6 +2,8 @@
 import glob
 import os, sys
 import urllib.parse
+from enum import Enum
+from pathlib import Path
 from dataclasses import dataclass
 from typing import List
 from flask import Flask, render_template, jsonify, request
@@ -196,6 +198,65 @@ def upload_file(file) -> None:
 
     # TODO - check file is saved
     # TODO - return bool on saved success
+
+def file_exists(full_path:str) -> bool:
+    """Returns if a file exists
+    Args:
+        full_path (str),
+    Returns:
+        file_exists (bool),
+    """
+    file_exists = Path(full_path).exists()
+    return file_exists
+
+class SuccessErrors(Enum):
+    Success = 0
+    FileExists = 1
+    CreateFileError = 2
+    UpdateFileError = 3
+    Undefined = 99
+
+
+def create_markdown_file_from_filename(markdown_filename:str) -> SuccessErrors:
+    """Creates a markdown file based on incoming filename suggestion
+        If already exists, returns false,
+        If other os.file issue, returns false,
+        If successful, returns true
+    Args:
+        markdown_filename (str),
+    Returns:
+        success (SuccessErrors),
+    """
+    success = SuccessErrors.Undefined
+    full_path = ("%s/%s/%s" % (LOCAL_DIR, MARKDOWN_DIR, markdown_filename))
+
+    if file_exists(full_path):
+        success = SuccessErrors.FileExists
+    else:
+        open(full_path, 'a').close()
+        if file_exists(full_path):
+            success = SuccessErrors.Success
+
+    return success
+
+
+@app.route('/api/v1/resources/create_markdown_file', methods=['GET'])
+def create_markdown_file():
+    result_message = ""
+    markdown_filename = request.args.get('markdown_filename', default="", type=str)
+    success = create_markdown_file_from_filename(markdown_filename)
+    print(success)
+    if success == SuccessErrors.Undefined:
+        result_message = "Something went wrong.. not sure what..."
+    elif success == SuccessErrors.FileExists:
+        result_message = "A file with that name already exists?"
+    elif success == SuccessErrors.CreateFileError:
+        result_message = "Something went wrong trying to create the new file."
+    elif success == SuccessErrors.Success:
+        result_message = "File successfully created."
+
+    return jsonify(success=result_message)
+
 
 @app.route('/api/v1/resources/upload_image', methods=['POST'])
 def upload_image():

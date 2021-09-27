@@ -5,14 +5,40 @@ function get_markdown_data(markdown_friendly_name){
   var markdown_data_url = global_api_url +
                           "get_markdown?markdown_name=" +
                           markdown_friendly_name;
-    $('#comment-md').load(markdown_data_url);
+
 }
 function get_markdown_names(){
-$.get(global_api_url + "get_markdown_names", function(data){
+  $.get(global_api_url + "get_markdown_names", function(data){
+    $('.markdown_files').html("");
     for (var i=0; i < data.markdown_names.length; i++){
       $('.markdown_files').append("<div onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"');\">" + data.markdown_names[i] + "</div>");
     }
   });
+}
+
+function create_new_markdown_file() {
+  var new_markdown_filename = encodeURIComponent($('#new_markdown_filename').val());
+  if (!new_markdown_filename.endsWith(".md")){
+    alert("Please ensure the filename ends in '.md'");
+  }
+  var file_created = null;
+  $.get(global_api_url +
+        "create_markdown_file" +
+        "?markdown_filename=" +
+        new_markdown_filename, function(data){
+          console.log(data);
+          if (data){
+            if(data.success === "File successfully created."){
+              markdown_friendly_name = new_markdown_filename.replaceAll(".md", "")
+              get_markdown_names();
+              get_markdown_data(markdown_friendly_name);
+            }
+          }
+          else{
+            alert("Something went wrong creating the new markdown file");
+            alert(file_created);
+          }
+        });
 }
 $(function() {
   var $previewContainer = $('#comment-md-preview-container');

@@ -15,8 +15,8 @@ function get_markdown_names(){
       html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
       html += "          <span class=\"file_rollover\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">" + data.markdown_names[i].trim();
       html += "        </span>";
-      html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">Show</button>";
-      html += "            <button class=\"btn btn-error btn-xs pull-right\" data-delete-name=\""+data.markdown_names[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.markdown_names[i].trim()+"')\">Delete</button>";
+      html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">Show</button> ";
+      html += "            <button class=\"btn btn-danger btn-xs pull-right\" data-delete-name=\""+data.markdown_names[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.markdown_names[i].trim()+"')\">Delete</button>";
       html += "      </div></div>";
       $('.markdown_files').append(html);
     }

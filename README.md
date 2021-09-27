@@ -15,7 +15,7 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
  - [X] 1 - Load markdown data into markdown-editor
  - [X] 2 - HTML form functionality for loading markdown files
  - [X] 2 - HTML form functionality for creating new markdown files
- - [ ] 2 - HTML form functionality for deleting markdown files
+ - [X] 2 - HTML form functionality for deleting markdown files
  - [ ] 3 - HTML form functionality for listing image files
  - [ ] 3 - Flask API functionality for listing image files
  - [ ] 3 - HTML form functionality for deleting image files

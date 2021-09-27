@@ -1,19 +1,51 @@
 // Code goes here
+var global_api_url = global_host_url + "/api/v1/resources/";
+var global_markdown_file_name = "";
 
-var global_api_url = global_host_url + "/api/v1/resources/"
 function get_markdown_data(markdown_friendly_name){
   var markdown_data_url = global_api_url +
                           "get_markdown?markdown_name=" +
                           markdown_friendly_name;
-
+  $('#comment-md').load(markdown_data_url);
 }
 function get_markdown_names(){
   $.get(global_api_url + "get_markdown_names", function(data){
     $('.markdown_files').html("");
     for (var i=0; i < data.markdown_names.length; i++){
-      $('.markdown_files').append("<div onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"');\">" + data.markdown_names[i] + "</div>");
+      html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
+      html += "          <span class=\"file_rollover\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">" + data.markdown_names[i].trim();
+      html += "        </span>";
+      html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">Show</button>";
+      html += "            <button class=\"btn btn-error btn-xs pull-right\" data-delete-name=\""+data.markdown_names[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.markdown_names[i].trim()+"')\">Delete</button>";
+      html += "      </div></div>";
+      $('.markdown_files').append(html);
     }
   });
+}
+
+function delete_markdown_file_modal(markdown_name){
+  global_markdown_file_name = markdown_name;
+  $('#deleteMarkdownModal').modal('toggle');
+}
+
+function delete_markdown_file() {
+  $('#deleteMarkdownModal').modal('toggle');
+  if (global_markdown_file_name > ""){
+    $.get(global_api_url +
+      "delete_markdown" +
+      "?markdown_name=" +
+      global_markdown_file_name, function(data){
+        if (data){
+          if(data === "File deleted successfully."){
+            get_markdown_names();
+          }
+        }
+        else{
+          alert("Something went wrong deleting the markdown file");
+        }
+    });
+    global_markdown_file_name = "";
+  }
 }
 
 function create_new_markdown_file() {
@@ -23,33 +55,37 @@ function create_new_markdown_file() {
   }
   var file_created = null;
   $.get(global_api_url +
-        "create_markdown_file" +
-        "?markdown_filename=" +
-        new_markdown_filename, function(data){
-          console.log(data);
-          if (data){
-            if(data.success === "File successfully created."){
-              markdown_friendly_name = new_markdown_filename.replaceAll(".md", "")
-              get_markdown_names();
-              get_markdown_data(markdown_friendly_name);
-            }
-          }
-          else{
-            alert("Something went wrong creating the new markdown file");
-            alert(file_created);
-          }
-        });
+    "create_markdown_file" +
+    "?markdown_filename=" +
+    new_markdown_filename, function(data){
+      console.log(data);
+      if (data){
+        if(data.success === "File successfully created."){
+          markdown_friendly_name = new_markdown_filename.replaceAll(".md", "")
+          get_markdown_names();
+          get_markdown_data(markdown_friendly_name);
+        }
+      }
+      else{
+        alert("Something went wrong creating the new markdown file");
+        alert(file_created);
+      }
+  });
 }
 $(function() {
   var $previewContainer = $('#comment-md-preview-container');
   $previewContainer.hide();
 
+  $('#deleteMarkdownModal').on('show.bs.modal', function (e) {
+    $("#curCarModal").modal('toggle', $("#curCarSelect"));
+    // access parsed information through relatedTarget
+    console.log(e);
+
+  });
 
   get_markdown_data('hello');
 
   get_markdown_names();
-
-
 
   var $md = $("#comment-md").markdown({
     autofocus: false,

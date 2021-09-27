@@ -14,6 +14,15 @@ MARKDOWN_DIR="static/markdown"
 IMAGES_DIR="images"
 LOCAL_DIR=os.path.dirname(os.path.realpath(__file__))
 
+class SuccessErrors(Enum):
+    Success = 0
+    FileExists = 1
+    CreateFileError = 2
+    UpdateFileError = 3
+    FileDoesNotExist = 4
+    UnableToDeleteFile = 5
+    Undefined = 99
+
 @dataclass
 class todo_item:
     text: str
@@ -122,9 +131,7 @@ def get_markdown_file_paths():
         markdown_files (List[str]),
     """
     markdown_file_mask = ("%s/*.md" % (MARKDOWN_DIR))
-    print(markdown_file_mask)
     markdown_file_paths = (glob.glob(markdown_file_mask))
-    print(markdown_file_paths)
     markdown_files = []
     for file_path in markdown_file_paths:
         markdown_files.append(file_path)
@@ -150,14 +157,32 @@ def save_markdown_file(markdown:MarkdownFile) -> bool:
         save_result = False
     return save_result
 
-def delete_markdown_file(markdown_file:MarkdownFile) -> None:
+def delete_markdown_file(markdown_name:str) -> SuccessErrors:
     """Deletes a markdown file
     Args:
         markdown_file (MarkdownFile),
     Returns:
-        None,
+        success (SuccessErrors),
     """
-    os.remove(markdown_file.file_path)
+    success = SuccessErrors.Undefined
+    markdown_file = MarkdownFile()
+    print(markdown_name)
+    print(markdown_file.name)
+    print(markdown_file.file_path)
+    print(markdown_file.urlencoded_path)
+    print(markdown_file.markdown)
+    markdown_file.from_friendly_name(markdown_name)
+    if file_exists(markdown_file.file_path):
+        os.remove(markdown_file.file_path)
+        if file_exists(markdown_file.file_path):
+            success = SuccessErrors.UnableToDeleteFile
+        else:
+            success = SuccessErrors.Success
+    else:
+        success = SuccessErrors.FileDoesNotExist
+
+    return success
+
 
 def delete_image_file(image_file_path:str) -> None:
     """Deletes a image file
@@ -180,7 +205,7 @@ def get_friendly_markdown_name(markdown_file_path: str) -> str:
     markdown_file.set_defaults()
     return markdown_file.name
 
-def upload_file(file) -> None:
+def upload_file(file) -> SuccessErrors:
     """Uploads a file
     Args:
         file_data (str),
@@ -188,16 +213,12 @@ def upload_file(file) -> None:
     Returns:
         None,
     """
-    # print("file: %s" % file_name)
-    #print("filename: %s" % file.filename)
-    print(file.filename)
-
+    success = SuccessErrors.CreateFileError
     full_path = ("%s/%s/%s/%s" % (LOCAL_DIR, MARKDOWN_DIR, IMAGES_DIR, file.filename))
-    print(full_path)
     file.save(full_path)
-
-    # TODO - check file is saved
-    # TODO - return bool on saved success
+    if file_exists(full_path):
+        success = SuccessErrors.Success
+    return success
 
 def file_exists(full_path:str) -> bool:
     """Returns if a file exists
@@ -208,14 +229,6 @@ def file_exists(full_path:str) -> bool:
     """
     file_exists = Path(full_path).exists()
     return file_exists
-
-class SuccessErrors(Enum):
-    Success = 0
-    FileExists = 1
-    CreateFileError = 2
-    UpdateFileError = 3
-    Undefined = 99
-
 
 def create_markdown_file_from_filename(markdown_filename:str) -> SuccessErrors:
     """Creates a markdown file based on incoming filename suggestion
@@ -239,13 +252,11 @@ def create_markdown_file_from_filename(markdown_filename:str) -> SuccessErrors:
 
     return success
 
-
 @app.route('/api/v1/resources/create_markdown_file', methods=['GET'])
 def create_markdown_file():
     result_message = ""
     markdown_filename = request.args.get('markdown_filename', default="", type=str)
     success = create_markdown_file_from_filename(markdown_filename)
-    print(success)
     if success == SuccessErrors.Undefined:
         result_message = "Something went wrong.. not sure what..."
     elif success == SuccessErrors.FileExists:
@@ -256,7 +267,6 @@ def create_markdown_file():
         result_message = "File successfully created."
 
     return jsonify(success=result_message)
-
 
 @app.route('/api/v1/resources/upload_image', methods=['POST'])
 def upload_image():
@@ -269,13 +279,29 @@ def upload_image():
 
     return jsonify(success=True)
 
-
 @app.route('/api/v1/resources/delete_image', methods=['POST'])
 def delete_image():
     image_file_path = request.form.get("image_file_path")
     delete_image_file(image_file_path)
 
     return jsonify(True)
+
+@app.route('/api/v1/resources/delete_markdown', methods=['GET'])
+def delete_markdown():
+    result = "Something went terribly, terribly wrong.."
+    friendly_file_path = request.args.get("markdown_name")
+    delete_result = delete_markdown_file(friendly_file_path)
+
+    if delete_result == SuccessErrors.Undefined:
+        result = "Something went terribly, terribly wrong.."
+    elif delete_result == SuccessErrors.UnableToDeleteFile:
+        result = "We tried to, but were unable to delete the file"
+    elif delete_result == SuccessErrors.FileDoesNotExist:
+        result = "That... file... doesn't appear, to exist?... nope, no idea."
+    elif delete_result == SuccessErrors.Success:
+        result = "File deleted successfully."
+
+    return jsonify(result)
 
 
 @app.route('/api/v1/resources/save_markdown', methods=['POST'])
@@ -330,15 +356,11 @@ def markdown_editor():
 
     images_path = ("%s/%s/" % (MARKDOWN_DIR, IMAGES_DIR))
     markdown_files = get_markdown_file_paths()
-    print("markdown_files: %s" % markdown_files)
     imagepath_and_markdowns = []
     imagepath_and_markdowns.append(images_path)
     for file_path in markdown_files:
         friendly_markdown_name = get_friendly_markdown_name(file_path)
         imagepath_and_markdowns.append(friendly_markdown_name)
-        print("friendly_markdown_name: %s" % friendly_markdown_name)
-    for thing in imagepath_and_markdowns:
-        print("thing: %s" % thing)
     global_api_host = request.host_url
     host_url_and_images_path = [global_api_host, images_path]
     return render_template('markdown_editor.html', host_url_and_images_path=host_url_and_images_path)

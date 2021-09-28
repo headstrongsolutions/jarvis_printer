@@ -11,8 +11,8 @@ save_button     += "            </button>";
 
 function save_markdown(markdown){
   data = {};
-  data.name = $('#markdown_name').text();
-  data.markdown = markdown;
+  data.name = $('#markdown_name').text().trim();
+  data.markdown = $('#comment-md').val();
   console.log(data);
   $.post( global_api_url + "save_markdown", data);
 }

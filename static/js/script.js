@@ -3,12 +3,25 @@ var global_api_url = global_host_url + "/api/v1/resources/";
 var global_markdown_file_name = "";
 var global_image_file_name = "";
 
+function get_first_markdown_file(){
+  first_markdown_name = "";
+  $.get(global_api_url + "get_markdown_names", function(data){
+    if (data.markdown_names.length >= 1){
+      $('#markdown_name').html(data.markdown_names[0]);
+      get_markdown_data(data.markdown_names[0]);
+    }
+  },null,null,false);
+  return first_markdown_name;
+}
+
 function get_markdown_data(markdown_friendly_name){
   var markdown_data_url = global_api_url +
-                          "get_markdown?markdown_name=" +
-                          markdown_friendly_name;
+  "get_markdown?markdown_name=" +
+  markdown_friendly_name;
   $('#comment-md').load(markdown_data_url);
+  $('#markdown_name').html(markdown_friendly_name);
 }
+
 function get_markdown_names(){
   $.get(global_api_url + "get_markdown_names", function(data){
     $('.markdown_files').html("");
@@ -68,7 +81,7 @@ function delete_markdown_file() {
         else{
           alert("Something went wrong deleting the markdown file");
         }
-    });
+      });
     global_markdown_file_name = "";
   }
 }
@@ -88,7 +101,7 @@ function delete_image_file() {
         else{
           alert("Something went wrong deleting the image file");
         }
-    });
+      });
     global_image_file_name = "";
   }
 }
@@ -115,22 +128,22 @@ function create_new_markdown_file() {
         alert("Something went wrong creating the new markdown file");
         alert(file_created);
       }
-  });
-}
+    });
+  }
+
+
+// ## Doc Ready
 $(function() {
   var $previewContainer = $('#comment-md-preview-container');
   $previewContainer.hide();
 
   $('#deleteMarkdownModal').on('show.bs.modal', function (e) {
     $("#curCarModal").modal('toggle', $("#curCarSelect"));
-    // access parsed information through relatedTarget
-    console.log(e);
 
   });
-
-  get_markdown_data('hello');
   get_markdown_names();
   get_images();
+  get_first_markdown_file();
 
   var $md = $("#comment-md").markdown({
     autofocus: false,

@@ -321,17 +321,16 @@ def delete_markdown():
 
 @app.route('/api/v1/resources/save_markdown', methods=['POST'])
 def save_markdown():
-    file_path = request.form.get("file_path")
-    name = request.form.get("name")
-    urencoded_path = request.form.get("urencoded_path")
-    markdown = request.form.get("markdown")
-    markdown_file = MarkdownFile(file_path=file_path,
-                                 name=name,
-                                 urlencoded_path=urencoded_path,
-                                 markdown=markdown)
-
-    save_result = save_markdown_file(markdown_file)
-    return jsonify(save_result=save_result)
+    print(request.form)
+    # this line prints out the form to the browser
+    return jsonify(request.form.to_dict())
+    print("thing: %s" % request.form.get("name"))
+    # markdown_file = MarkdownFile()
+    # markdown_file.from_friendly_name(request.form.get("name"))
+    # markdown_file.markdown = request.form.get("markdown")
+    # save_result = save_markdown_file(markdown_file)
+    # return jsonify(save_result=save_result)
+    return jsonify(success = True)
 
 @app.route('/api/v1/resources/get_image_filenames', methods=['GET'])
 def get_image_filenames():

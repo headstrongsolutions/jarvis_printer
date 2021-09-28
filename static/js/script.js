@@ -1,13 +1,27 @@
 // Code goes here
+
+
 var global_api_url = global_host_url + "/api/v1/resources/";
 var global_markdown_file_name = "";
 var global_image_file_name = "";
+
+var save_button  = "            <button style=\"margin:5px;\" onclick=\"save_markdown()\" type=\"button\" class=\"pull-right btn btn-success btn-sm\">";
+save_button     += "                <span class=\"glyphicon glyphicon-save\" aria-hidden=\"true\"></span>";
+save_button     += "            </button>";
+
+function save_markdown(markdown){
+  data = {};
+  data.name = $('#markdown_name').text();
+  data.markdown = markdown;
+  console.log(data);
+  $.post( global_api_url + "save_markdown", data);
+}
 
 function get_first_markdown_file(){
   first_markdown_name = "";
   $.get(global_api_url + "get_markdown_names", function(data){
     if (data.markdown_names.length >= 1){
-      $('#markdown_name').html(data.markdown_names[0]);
+      $('#markdown_name').html(data.markdown_names[0] + save_button);
       get_markdown_data(data.markdown_names[0]);
     }
   },null,null,false);
@@ -18,8 +32,10 @@ function get_markdown_data(markdown_friendly_name){
   var markdown_data_url = global_api_url +
   "get_markdown?markdown_name=" +
   markdown_friendly_name;
-  $('#comment-md').load(markdown_data_url);
-  $('#markdown_name').html(markdown_friendly_name);
+  $.get(markdown_data_url, function(data){
+    $('#comment-md').val(data);
+    $('#markdown_name').html(markdown_friendly_name + save_button);
+  });
 }
 
 function get_markdown_names(){
@@ -130,8 +146,6 @@ function create_new_markdown_file() {
       }
     });
   }
-
-
 // ## Doc Ready
 $(function() {
   var $previewContainer = $('#comment-md-preview-container');
@@ -147,6 +161,7 @@ $(function() {
 
   var $md = $("#comment-md").markdown({
     autofocus: false,
+    savable:true,
     height: 270,
     iconlibrary: 'fa',
     onShow: function(e) {
@@ -161,6 +176,9 @@ $(function() {
                             .html(content)
                             .find('table')
                             .addClass('table table-bordered table-striped table-hover');
+    },
+    onSave: function(e) {
+      save_markdown(e.getContent())
     },
     footer: function(e) {
       return '\

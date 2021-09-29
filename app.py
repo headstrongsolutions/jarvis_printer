@@ -7,7 +7,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List
 from flask import Flask, render_template, jsonify, request
-from CatPrinter import catprinter
+import catprinter
 
 app = Flask(__name__)
 MARKDOWN_DIR="static/markdown"
@@ -321,10 +321,6 @@ def delete_markdown():
 
 @app.route('/api/v1/resources/save_markdown', methods=['POST'])
 def save_markdown():
-    print(request.form)
-    # # this line prints out the form to the browser
-    # return jsonify(request.form.to_dict())
-    # print("thing: %s" % request.form.get("name"))
     markdown_file = MarkdownFile()
     markdown_file.from_friendly_name(request.form.get("name"))
     markdown_file.markdown = request.form.get("markdown")

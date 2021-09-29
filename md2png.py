@@ -29,7 +29,7 @@ class ImageTreeprocessor(markdown.treeprocessors.Treeprocessor):
     """
     Recusively walks the parsed markdown and renders to an image.  Uses chunks
     of IMAGE_BLOCK_HEIGHT to render parts of the markdown incrementally (without
-    pre-measuring) and assembles the chunks at the end. 
+    pre-measuring) and assembles the chunks at the end.
     """
 
     def __init__(self, width_spec, config={}):
@@ -310,12 +310,14 @@ class ImageTreeprocessor(markdown.treeprocessors.Treeprocessor):
         self.newline()
 
     def handle_img(self, node):
-        with Image.open(node.attrib['src']) as im:
-            self.new_image_block()
-            if im.width > self.image_width:
-                scale = self.image_width / im.width
-                im = im.resize((self.image_width, int(im.height * scale)))
-            self.images.append((im, im.height))
+        print("|%s|"%node.attrib['src'])
+        path = node.attrib['src']
+        im = Image.open(path)
+        if im.width > self.image_width:
+            scale = self.image_width / im.width
+            im = im.resize((self.image_width, int(im.height * scale)))
+        self.images.append((im, im.height))
+        self.new_image_block()
 
     def handle_unknown(self, node):
         print("Unknown tag: %s" % node.tag)
@@ -390,7 +392,7 @@ class ImageTreeprocessor(markdown.treeprocessors.Treeprocessor):
                           text_frag,
                           font=font, fill=color)
 
-                # Get a real measurement segment 
+                # Get a real measurement segment
                 (w, h) = draw.textsize(text_frag,
                                        font=font)
                 blocks.append((self.image_x, self.y, w, h))
@@ -398,7 +400,7 @@ class ImageTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 if end_index < len(parts):
                     self.newline()
                 else:
-                    # If we are at the end of a block, write out a newline 
+                    # If we are at the end of a block, write out a newline
                     if end_block:
                         self.newline()
                     # Otherwise, leave X at the end of the last word

@@ -497,7 +497,7 @@ def main():
     # cat_printer.add_text_file("text/stardew.txt")
     # cat_printer.add_image("images/dogs.jpeg")
     # cat_printer.add_text_string("My dog is called 'Dan'.")
-    cat_printer.add_markdown("../static/markdown/test.md")
+    cat_printer.add_markdown("static/markdown/test.md")
     cat_printer.add_feed(3)
     cat_printer.print()
 

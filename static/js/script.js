@@ -9,19 +9,34 @@ var save_button  = "            <button style=\"margin:5px;\" onclick=\"save_mar
 save_button     += "                <span class=\"glyphicon glyphicon-save\" aria-hidden=\"true\"></span>";
 save_button     += "            </button>";
 
-function save_markdown(markdown){
+var print_button  = "            <button style=\"margin:5px;\" onclick=\"print_markdown()\" type=\"button\" class=\"pull-right btn btn-primary btn-sm\">";
+print_button     += "                <span class=\"glyphicon glyphicon-print\" aria-hidden=\"true\"></span>";
+print_button     += "            </button>";
+
+function save_markdown(){
   data = {};
   data.name = $('#markdown_name').text().trim();
   data.markdown = $('#comment-md').val();
-  console.log(data);
   $.post( global_api_url + "save_markdown", data);
+}
+
+function print_markdown(){
+  save_markdown()
+  data = {};
+  data.name = $('#markdown_name').text().trim();
+  print_url = global_api_url
+              + "print_markdown"
+              + "?markdown_name="
+              + $('#markdown_name').text().trim();
+  $.get(print_url , data);
 }
 
 function get_first_markdown_file(){
   first_markdown_name = "";
   $.get(global_api_url + "get_markdown_names", function(data){
     if (data.markdown_names.length >= 1){
-      $('#markdown_name').html(data.markdown_names[0] + save_button);
+      page_header = data.markdown_names[0] + save_button + print_button;
+      $('#markdown_name').html(page_header);
       get_markdown_data(data.markdown_names[0]);
     }
   },null,null,false);
@@ -33,8 +48,9 @@ function get_markdown_data(markdown_friendly_name){
   "get_markdown?markdown_name=" +
   markdown_friendly_name;
   $.get(markdown_data_url, function(data){
+    page_header = markdown_friendly_name + save_button + print_button;
+    $('#markdown_name').html(page_header);
     $('#comment-md').val(data);
-    $('#markdown_name').html(markdown_friendly_name + save_button);
   });
 }
 
@@ -161,7 +177,7 @@ $(function() {
 
   var $md = $("#comment-md").markdown({
     autofocus: false,
-    savable:true,
+    // savable:true,
     height: 270,
     iconlibrary: 'fa',
     onShow: function(e) {
@@ -177,9 +193,9 @@ $(function() {
                             .find('table')
                             .addClass('table table-bordered table-striped table-hover');
     },
-    onSave: function(e) {
-      save_markdown(e.getContent())
-    },
+    // onSave: function(e) {
+    //   save_markdown(e.getContent())
+    // },
     footer: function(e) {
       return '\
 					<span class="text-muted">\
@@ -252,7 +268,7 @@ $(function() {
       msgs.err.hide();
     },
     uploadFinished: function(i, file, response, time) {
-      $md.val($md.val() + "![" + file.name + "](" + global_image_path + file.name + ")\n").trigger('change');
+      $md.val($md.val() + "![" + file.name + "](" + global_images_path + file.name + ")\n").trigger('change');
       // response is the data you got back from server in JSON format.
     }
   });

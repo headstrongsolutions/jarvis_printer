@@ -1,7 +1,7 @@
 // Code goes here
 
 
-var global_api_url = global_host_url + "/api/v1/resources/";
+var global_api_url = global_host_url + "api/v1/resources/";
 var global_markdown_file_name = "";
 var global_image_file_name = "";
 

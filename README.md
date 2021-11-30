@@ -13,7 +13,6 @@ The core CatPrinter is working as expected, and passing a Markdown file to it wo
 
 ### To Do
  - [X] 0 - HTML form functionality for PRINTING markdown files! IKR!
- - [ ] 3 - HTML form functionality for renaming markdown file
  - [ ] 4 - Some form of keep alive, probably within the flask application
  - [ ] 9 - Fix intermittent drag'n'drop error on markdown-editor
  - [X] 3 - Fixed rollovers for filenames

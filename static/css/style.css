@@ -14,19 +14,32 @@ body {
   margin-bottom: 15px;
 
 }
-#markdown_name button{
+
+#markdown_name button {
   margin:5px;
 }
-.file_rollover{
+
+.file_rollover {
   margin-left:5px;
   margin-right:5px;
   padding:2px;
   min-height:24px;
+  width:100%;
 }
-/* .file_rollover:hover {
+
+.file_rollover:hover {
   background-color:#eee;
   cursor:pointer;
-} */
+}
+
+.file_name {
+  display:inline-block;
+  min-width:50%;
+  max-width:80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .md-editor {
   display: block;

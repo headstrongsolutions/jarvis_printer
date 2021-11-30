@@ -59,7 +59,7 @@ function get_markdown_names(){
     $('.markdown_files').html("");
     for (var i=0; i < data.markdown_names.length; i++){
       html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
-      html += "          <span class=\"file_rollover\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">" + data.markdown_names[i].trim();
+      html += "          <span class=\"file_name\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">" + data.markdown_names[i].trim();
       html += "        </span>";
       html += "            <button class=\"btn btn-success btn-xs pull-right\" onclick=\"get_markdown_data('"+data.markdown_names[i].trim()+"')\">Show</button> ";
       html += "            <button class=\"btn btn-danger btn-xs pull-right\" data-delete-name=\""+data.markdown_names[i].trim()+"\" onclick=\"delete_markdown_file_modal('"+data.markdown_names[i].trim()+"')\">Delete</button>";
@@ -69,18 +69,27 @@ function get_markdown_names(){
   });
 }
 
+function set_image_display(image_path){
+  $('#imagepreview').attr('src', image_path); 
+  $('#imagemodal').modal('show'); 
+}
+
 function get_images(){
   $.get(global_api_url + "get_image_filenames", function(data){
     $('.image_files').html("");
     for (var i=0; i < data.image_files.length; i++){
       short_path = data.image_files[i].trim().replaceAll(global_images_path, "");
       html =  "      <div class=\"file_rollover mt-5 col-lg-12\">";
-      html += "          <span class=\"file_rollover\">" + short_path;
-      html += "        </span>";
-      html += "            <a href=\""+data.image_files[i].trim()+"\" target=\"_blank\" class=\"btn btn-success btn-xs pull-right\">Show</a> ";
+      html += "          <span class=\"file_name\" onClick=\"set_image_display('"+data.image_files[i].trim()+"');\">";
+      html += "            " + short_path;
+      html += "          </span>";
+      html += "            <button class=\"btn btn-success btn-xs pull-right\" onClick=\"set_image_display('"+data.image_files[i].trim()+"');\">";
+      html += "                Show";
+      html += "            </button>";
       html += "            <button class=\"btn btn-danger btn-xs pull-right\" ";
       html += "                   data-delete-name=\""+data.image_files[i].trim()+"\" ";
-      html += "                   onclick=\"delete_image_file_modal('"+data.image_files[i].trim()+"')\">Delete</button>";
+      html += "                   onclick=\"delete_image_file_modal('"+data.image_files[i].trim()+"')\">Delete";
+      html += "            </button>";
       html += "      </div></div>";
       $('.image_files').append(html);
     }

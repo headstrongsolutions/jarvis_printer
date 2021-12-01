@@ -4,3 +4,4 @@ jarvis_printer
 jarvis_printer/*
 static/markdown/*
 gunicorn.log
+*.swp

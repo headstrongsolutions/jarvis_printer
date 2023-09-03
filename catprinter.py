@@ -129,7 +129,7 @@ class CatPrinter:
                  feed_lines:int):
         """Retracts paper
         Args:
-            feed_lines (int): how many ilnes of blank paper to retract,
+            feed_lines (int): how many lines of blank paper to retract,
         Returns:
             None,
         """

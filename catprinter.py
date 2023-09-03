@@ -125,6 +125,21 @@ class CatPrinter:
         self.add_image(image)
         print("Added to self.print_data: add_markdown: %s" % markdownfile_path)
 
+    def rem_feed(self,
+                 feed_lines:int):
+        """Retracts paper
+        Args:
+            feed_lines (int): how many ilnes of blank paper to retract,
+        Returns:
+            None,
+        """
+        # send command to printer with feed)liens as an arg for how many times to send it
+        #  (sounds a bit shit, but haven't seen a collection of commands)
+        self.print_data = []
+        for i in range(feed_lines):
+            self.print_data += self.format_message(self.RETRACT_PAPER, self.BLANK_SPEED)
+        self.print()
+
     def add_feed(self,
                  feed_lines:int):
         """Feeds (unprinted) paper
@@ -492,6 +507,7 @@ class CatPrinter:
 
 def main():
     cat_printer = CatPrinter()
+    cat_printer.rem_feed(2)
     # cat_printer.add_text_string("Stardew Valley")
     # cat_printer.add_image("images/stardew.jpeg")
     # cat_printer.add_text_file("text/stardew.txt")
@@ -500,6 +516,6 @@ def main():
     cat_printer.add_markdown("static/markdown/test.md")
     cat_printer.add_feed(3)
     cat_printer.print()
-
+    #cat_printer.rem_feed(15)
 if __name__ == "__main__":
     main()

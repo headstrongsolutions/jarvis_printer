@@ -1,4 +1,4 @@
-"""catprinter"""
+"""serialprinter"""
 from os import path
 from escpos.printer import Serial
 

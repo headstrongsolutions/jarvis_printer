@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Jarvis Printer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link data-require="fontawesome@4.1.0" data-semver="4.1.0" rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <script language="javascript">
+      global_host_url = "{{host_url_and_saturn_templates_path[0]}}"
+      global_saturn_temlpates_path = "{{host_url_and_saturn_templates_path[1]}}";
+    </script>
+    <style>
+      .container {
+        max-width: 1000px;
+      }
+      </style>
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-md-8">
+        <h1 id="template_name">
+          <button onclick="save_template()" type="button" class="pull-right btn btn-success btn-sm">
+            <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+          </button>
+          <button style="margin:5px;" onclick="print_markdown()" type="button" class="pull-right btn btn-primary btn-sm">
+            <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+          </button>
+        </h1>
+        <textarea id="comment-md" name="comment" placeholder="Say something..."></textarea>
+        <br />
+      </div>
+      <div class="col-md-4">
+        <h3>Saturn Template files</h3>
+          <div class="saturn_template_files"></div>
+          <div class="saturn_template_actions row">
+            <div class="col-lg-12">
+              <div class="input-group">
+                <input type="text" class="form-control" id="new_markdown_filename" placeholder="new markdown filename" />
+                <span class="input-group-btn">
+                  <button class="btn btn-primary" onclick="create_new_markdown_file()">New</button>
+                </span>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal fade" id="deleteSaturnTemplateModal" tabindex="-1" role="dialog" aria-labelledby="deleteSaturnTemplateModal" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteSaturnTemplateModalLabel">Delete Saturn Template File?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Are you certain you want to delete this Saturn Template file?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+            <button type="button" onclick="delete_saturn_template_file()" class="btn btn-danger">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+    <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    
+
+
+
+    <script src="/static/js/script.js"></script>
+
+  </body>
+</html>

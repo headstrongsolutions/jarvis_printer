@@ -11,6 +11,7 @@ import catprinter
 
 app = Flask(__name__)
 MARKDOWN_DIR="static/markdown"
+SATURN_TEMPLATE_DIR="static/saturn_templates"
 IMAGES_DIR="images"
 LOCAL_DIR=os.path.dirname(os.path.realpath(__file__))
 
@@ -123,6 +124,20 @@ def get_markdown_file(urlencoded_path:str) -> str:
             markdown = raw_content
     return markdown
 
+def get_saturn_templates_file_paths():
+    """Returns all Saturn template file paths in a specified directory
+    Args:
+        None,
+    Returns:
+        saturn_template_files (List[str]),
+    """
+    saturn_template_file_mask = ("%s/*.md" % (SATURN_TEMPLATE_DIR))
+    saturn_template_file_paths = (glob.glob(saturn_template_file_mask))
+    saturn_template_files = []
+    for file_path in saturn_template_file_paths:
+        saturn_template_files.append(file_path)
+    return saturn_template_files
+
 def get_markdown_file_paths():
     """Returns all markdown file paths in a specified directory
     Args:
@@ -207,6 +222,16 @@ def delete_image_file(image_file_path:str) -> None:
     markdown_images_path = str("%s/%s" % (MARKDOWN_DIR, IMAGES_DIR))
     if markdown_images_path in image_file_path:
         os.remove(image_file_path)
+
+def get_friendly_saturn_template_name(saturn_template_file_path: str) -> str:
+    """Returns a Saturn templates friendly name
+    Args:
+        markdown_file_path (str),
+    Returns:
+        markdown_file name (str),
+    """
+    
+    return saturn_template_file_path
 
 def get_friendly_markdown_name(markdown_file_path: str) -> str:
     """Returns a markdowns friendly name
@@ -356,8 +381,10 @@ def print_markdown():
     markdown = MarkdownFile()
     markdown.from_friendly_name(friendly_name=markdown_name)
     cat_printer = catprinter.CatPrinter()
+    #cat_printer.rem_feed(1)
+    #cat_printer.add_feed(1)
     cat_printer.add_markdown(LOCAL_DIR + "/" + markdown.file_path)
-    cat_printer.add_feed(3)
+    cat_printer.add_feed(2)
     cat_printer.print()
 
     return jsonify(name=markdown.name,
@@ -367,7 +394,6 @@ def print_markdown():
 
 @app.route('/markdown_editor', methods=['GET', 'POST'])
 def markdown_editor():
-
     images_path = ("%s/%s/" % (MARKDOWN_DIR, IMAGES_DIR))
     markdown_files = get_markdown_file_paths()
     imagepath_and_markdowns = []
@@ -378,6 +404,19 @@ def markdown_editor():
     global_api_host = request.host_url
     host_url_and_images_path = [global_api_host, images_path]
     return render_template('markdown_editor.html', host_url_and_images_path=host_url_and_images_path)
+
+@app.route('/saturn_pattern_editor', methods=['GET', 'POST'])
+def saturn_pattern_editor():
+    saturn_templates_path = ("%s/" % (SATURN_TEMPLATES_DIR))
+    saturn_template_files = get_markdown_file_paths()
+    saturn_templates = []
+    saturn_templates.append(images_path)
+    for file_path in saturn_template_files:
+        friendly_saturn_template_name = get_friendly_saturn_template_name(file_path)
+        saturn_templates.append(friendly_saturn_template_name)
+    global_api_host = request.host_url
+    host_url_and_templates_path = [global_api_host, saturn_templates_path]
+    return render_template('saturn_pattern_editor.html', host_url_and_templates_path=host_url_and_templates_path)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
